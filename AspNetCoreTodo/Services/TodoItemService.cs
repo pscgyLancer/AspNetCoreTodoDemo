@@ -12,24 +12,18 @@ namespace AspNetCoreTodo.Services
     {
         private readonly ApplicationDbContext _context;
 
-        public TodoItemService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public TodoItemService(ApplicationDbContext context) => _context = context;
 
-        public async Task<TodoItem[]> GetIncompleteItemsAsync()
-        {
-            return await _context.Items
+        public async Task<TodoItem[]> GetIncompleteItemsAsync() => await _context.Items
                 .Where(x => x.IsDone == false)
                 .ToArrayAsync();
-        }
 
         public async Task<bool> AddItemAsync(TodoItem newItem,ApplicationUser user)
         {
             newItem.Id = Guid.NewGuid();
             newItem.IsDone = false;
             newItem.UserId = user.Id;
-
+            newItem.DueAt = DateTimeOffset.Now.AddDays(3);
             _context.Items.Add(newItem);
 
             var saveResult = await _context.SaveChangesAsync();
@@ -49,11 +43,8 @@ namespace AspNetCoreTodo.Services
             return saveResult == 1; // One entity should have been updated
         }
 
-        public async Task<TodoItem[]> GetIncompleteItemsAsync(ApplicationUser user)
-        {
-           return await _context.Items
+        public async Task<TodoItem[]> GetIncompleteItemsAsync(ApplicationUser user) => await _context.Items
         .Where(x => x.IsDone == false && x.UserId == user.Id)
         .ToArrayAsync();
-        }
     }
 }
